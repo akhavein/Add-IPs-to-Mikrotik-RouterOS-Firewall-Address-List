@@ -1,5 +1,5 @@
 :global currentFileNumber 0;
-:global mainFileName "IranIPs/IranIPs";
+:global mainFileName "IPs/IPs";
 :global currentFileName ($mainFileName."0.txt");
 :put "$currentFileName file size is: $[/file get [/file find name=$currentFileName] size] B" ;
 
@@ -17,7 +17,7 @@
 }
 
 :put "Removing exisiting addresses from the current Address list"
-/ip firewall address-list remove [/ip firewall address-list find list=IranIPs]
+/ip firewall address-list remove [/ip firewall address-list find list=NoVPNIPs]
 
 :while ([/file get [/file find name=$currentFileName] size] > 0) do={
   :put "$currentFileName file size is: $[/file get [/file find name=$currentFileName] size] B"
@@ -47,7 +47,7 @@
       :local entry [:pick $line 0 $lineEnd ]
       :if ( [:len $entry ] > 0 ) do={
         :put "adding ip $entry to list"
-        /ip firewall address-list add list=IranIPs address=$entry
+        /ip firewall address-list add list=NoVPNIPs address=$entry
       }
     } else={
       :set flag false;

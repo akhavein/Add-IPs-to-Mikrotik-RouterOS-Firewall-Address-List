@@ -57,11 +57,11 @@ const ipBatchLength = (batch) => {
     }
   })
   try {
-    fs.writeFile(`./IranIPs/AllIPs.txt`, noDuplicateIPs.join('/n'), (err) => {
+    fs.writeFile(`./IPs/AllIPs.txt`, noDuplicateIPs.join('/n'), (err) => {
       if (err) {
         return console.log(err);
       }
-      console.log(`The file ./IranIPs/AllIPs.txt was saved!`);
+      console.log(`The file ./IPs/AllIPs.txt was saved!`);
     });
   } catch (err) {
     console.error(err);
@@ -80,11 +80,11 @@ const ipBatchLength = (batch) => {
   ipBatchesString = ipBatches.map((batch) => batch.join('\n')).map((item) => item.concat('\n#'));
   ipBatchesString.forEach((batchString, index) => {
     try {
-      fs.writeFile(`./IranIPs/IranIPs${index}.txt`, batchString, (err) => {
+      fs.writeFile(`./IPs/IPs${index}.txt`, batchString, (err) => {
         if (err) {
           return console.log(err);
         }
-        console.log(`The file ./IranIPs/IranIPs${index}.txt was saved!`);
+        console.log(`The file ./IPs/IPs${index}.txt was saved!`);
       });
     } catch (err) {
       console.error(err);
