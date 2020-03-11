@@ -1,0 +1,59 @@
+:global currentFileNumber 0;
+:global mainFileName "IranIPs/IranIPs";
+:global currentFileName ($mainFileName."0.txt");
+:put "$currentFileName file size is: $[/file get [/file find name=$currentFileName] size] B" ;
+
+:global currentFileContent [/file get [/file find name=$currentFileName] contents] ;
+
+:global currentFileContentLen [ :len $currentFileContent ];
+
+:global lineEnd 0;
+:global line "";
+:global lastEnd 0;
+:global flag true;
+
+:if ($currentFileContentLen = 0) do={
+  :error ("Could not retrieve $currentFileName contents")
+}
+
+:put "Removing exisiting addresses from the current Address list"
+/ip firewall address-list remove [/ip firewall address-list find list=IranIPs]
+
+:while ([/file get [/file find name=$currentFileName] size] > 0) do={
+  :put "$currentFileName file size is: $[/file get [/file find name=$currentFileName] size] B"
+
+  :set currentFileContent [/file get [/file find name=$currentFileName] contents] ;
+
+  :set currentFileContentLen [ :len $currentFileContent ];
+  :put "currentFileContentLen $currentFileContentLen"
+
+  :set lineEnd 0;
+  :set line "";
+  :set lastEnd 0;
+
+  :if ($currentFileContentLen = 0) do={
+    :put ("Could not retrieve $currentFileName contents")
+  }
+
+  :while ($lineEnd < $currentFileContentLen and $flag) do={
+
+    :set lineEnd [:find $currentFileContent "\n" $lastEnd ] ;
+    :set line [:pick $currentFileContent $lastEnd $lineEnd] ;
+    :set lastEnd ( $lineEnd + 1 ) ;
+
+    #If the line doesn't start with a hash then process and add to the list
+    :if ( [:pick $line 0 1] != "#" ) do={
+
+      :local entry [:pick $line 0 $lineEnd ]
+      :if ( [:len $entry ] > 0 ) do={
+        :put "adding ip $entry to list"
+        /ip firewall address-list add list=IranIPs address=$entry
+      }
+    } else={
+      :set flag false;
+    }
+  }
+  :set currentFileNumber ($currentFileNumber + 1);
+  :set currentFileName ($mainFileName.$currentFileNumber.".txt");
+  :set flag true;
+}

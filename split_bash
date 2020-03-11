@@ -1,0 +1,1 @@
+gsplit -d --additional-suffix=.txt -l 100 IranInternalIPs.txt IranIPs
