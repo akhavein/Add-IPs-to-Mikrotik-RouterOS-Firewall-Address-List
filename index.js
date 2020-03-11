@@ -7,7 +7,6 @@ const fs = require('fs');
 const manualIPs = [
   '176.31.23.179', // mrmovie
   '78.46.190.27', // mrmovie
-  '',
 ]
 
 const ips = manualIPs;
@@ -57,7 +56,7 @@ const ipBatchLength = (batch) => {
     }
   })
   try {
-    fs.writeFile(`./IPs/AllIPs.txt`, noDuplicateIPs.join('/n'), (err) => {
+    fs.writeFile(`./IPs/AllIPs.txt`, noDuplicateIPs.join('\n'), (err) => {
       if (err) {
         return console.log(err);
       }
