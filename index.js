@@ -7,6 +7,10 @@ const fs = require('fs');
 const manualIPs = [
   '176.31.23.179', // mrmovie
   '78.46.190.27', // mrmovie
+  '104.28.0.13', // 2tinymvz.net
+  '116.202.194.110', // dl1.tinydl.club
+  '88.198.12.89', // dl7.tinydl.club
+  '88.99.88.164', // dl8.tinydl.club
 ]
 
 const ips = manualIPs;
