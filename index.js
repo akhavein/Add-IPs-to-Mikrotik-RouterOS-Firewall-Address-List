@@ -1,29 +1,10 @@
 const csv=require('csvtojson');
-const iranIPsCsvFilePath='./IranIPs.csv';
+const iranIPsCsvFilePath='./IranCIDRs.csv';
 const myCIDRSCsvFilePath='./myCIDRs.csv';
-const Netmask = require('netmask').Netmask;
+const cidrTools = require('cidr-tools');
 const fs = require('fs');
 
-const manualIPs = [
-  '176.31.23.179', // mrmovie
-  '78.46.190.27', // mrmovie
-  '104.28.0.13', // 2tinymvz.net
-  '116.202.194.110', // dl1.tinydl.club
-  '88.198.12.89', // dl7.tinydl.club
-  '88.99.88.164', // dl8.tinydl.club
-]
-
-const ips = manualIPs;
-
-const validateIPAddress = (ip) => {
-  var ipformat = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-  if(ip.match(ipformat)) {
-    return true;
-  }
-  return false;
-}
-
-const ipBatchLength = (batch) => {
+const batchLength = (batch) => {
   let out = 0;
   batch.forEach((ip) => {
     out += ip.length;
@@ -41,53 +22,36 @@ const ipBatchLength = (batch) => {
   const iranCIDRs = iranCIDRsjsonObj.map((item) => item[0]);
   const myCIDRs = myCIDRsjsonObj.map((item) => item.ip);
   const cidrs = [...myCIDRs, ...iranCIDRs];
-  cidrs.forEach((cidr) => {
-    const block = new Netmask(cidr);
-    block.forEach((ip, long, index) => {
-      ips.push(ip);
-    });
-  })
-  const noDuplicateIPs = [];
-  ips.filter(validateIPAddress).forEach((ip) => {
-    let flag = true;
-    noDuplicateIPs.forEach((ndip) => {
-      if (ip === ndip) {
-        flag = false;
-      }
-    });
-    if (flag) {
-      noDuplicateIPs.push(ip);
-    }
-  })
+  mergedCIDRs = cidrTools.merge(cidrs);
   try {
-    fs.writeFile(`./IPs/AllIPs.txt`, noDuplicateIPs.join('\n'), (err) => {
+    fs.writeFile(`./CIDRs/AllCIDRs.txt`, mergedCIDRs.join('\n'), (err) => {
       if (err) {
         return console.log(err);
       }
-      console.log(`The file ./IPs/AllIPs.txt was saved!`);
+      console.log(`The file ./CIDRs/AllCIDRs.txt was saved!`);
     });
   } catch (err) {
     console.error(err);
   }
-  const ipBatches = [];
+  const cidrBatches = [];
   let iterator = 0;
-  ipBatches[iterator] = [];
-  noDuplicateIPs.forEach((ip) => {
-    ipBatches[iterator].push(ip);
-    if (ipBatchLength(ipBatches[iterator]) > 3500) {
+  cidrBatches[iterator] = [];
+  mergedCIDRs.forEach((ip) => {
+    cidrBatches[iterator].push(ip);
+    if (batchLength(cidrBatches[iterator]) > 3500) {
       iterator += 1;
-      ipBatches[iterator] = [];
+      cidrBatches[iterator] = [];
     }
   });
   
-  ipBatchesString = ipBatches.map((batch) => batch.join('\n')).map((item) => item.concat('\n#'));
-  ipBatchesString.forEach((batchString, index) => {
+  cidrBatchesString = cidrBatches.map((batch) => batch.join('\n')).map((item) => item.concat('\n#'));
+  cidrBatchesString.forEach((batchString, index) => {
     try {
-      fs.writeFile(`./IPs/IPs${index}.txt`, batchString, (err) => {
+      fs.writeFile(`./CIDRs/CIDRs${index}.txt`, batchString, (err) => {
         if (err) {
           return console.log(err);
         }
-        console.log(`The file ./IPs/IPs${index}.txt was saved!`);
+        console.log(`The file ./CIDRs/CIDRs${index}.txt was saved!`);
       });
     } catch (err) {
       console.error(err);

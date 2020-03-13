@@ -1,5 +1,5 @@
 :global currentFileNumber 0;
-:global mainFileName "IPs/IPs";
+:global mainFileName "CIDRs/CIDRs";
 :global currentFileName ($mainFileName."0.txt");
 :put "$currentFileName file size is: $[/file get [/file find name=$currentFileName] size] B" ;
 
