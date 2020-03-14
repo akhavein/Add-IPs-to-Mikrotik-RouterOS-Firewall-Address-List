@@ -1,5 +1,6 @@
 const csv=require('csvtojson');
-const iranIPsCsvFilePath='./IranCIDRs.csv';
+const iranCIDRsICTCsvFilePath='./IranCIDRsICT.csv';
+const iranOfficialCIDRsCsvFilePath='./IranOfficialCIDRs.csv';
 const myCIDRSCsvFilePath='./myCIDRs.csv';
 const cidrTools = require('cidr-tools');
 const fs = require('fs');
@@ -13,15 +14,21 @@ const batchLength = (batch) => {
 }
 
 (async () => {
-  const iranCIDRsjsonObj = await csv({
+  const iranCIDRsICTjsonObj = await csv({
     noheader:true,
     output: "csv"
   })
-  .fromFile(iranIPsCsvFilePath);
+  .fromFile(iranCIDRsICTCsvFilePath);
+  const iranOfficialCIDRsjsonObj = await csv({
+    noheader:true,
+    output: "csv"
+  })
+  .fromFile(iranOfficialCIDRsCsvFilePath);
   const myCIDRsjsonObj = await csv().fromFile(myCIDRSCsvFilePath);
-  const iranCIDRs = iranCIDRsjsonObj.map((item) => item[0]);
+  const iranCIDRsICT = iranCIDRsICTjsonObj.map((item) => item[0]);
+  const iranOfficialCIDRs = iranOfficialCIDRsjsonObj.map((item) => item[0]);
   const myCIDRs = myCIDRsjsonObj.map((item) => item.ip);
-  const cidrs = [...myCIDRs, ...iranCIDRs];
+  const cidrs = [...myCIDRs, ...iranCIDRsICT, ...iranOfficialCIDRs];
   mergedCIDRs = cidrTools.merge(cidrs);
   try {
     fs.writeFile(`./CIDRs/AllCIDRs.txt`, mergedCIDRs.join('\n'), (err) => {
